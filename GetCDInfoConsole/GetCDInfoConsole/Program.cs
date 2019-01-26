@@ -1,5 +1,7 @@
-﻿using MetaBrainz.MusicBrainz.DiscId;
+﻿using MetaBrainz.MusicBrainz.CoverArt;
+using MetaBrainz.MusicBrainz.DiscId;
 using System;
+using System.Text;
 
 namespace GetCDInfoConsole
 {
@@ -42,8 +44,27 @@ namespace GetCDInfoConsole
                     if ((features & DiscReadFeature.TrackIsrc) != 0)
                         Console.Write($" ISRC: {t.Isrc ?? "* not set *"}");
                     Console.WriteLine();
-
                 }
+
+                //CD情報取得
+                var uri = new UriBuilder(TableOfContents.DefaultUrlScheme, TableOfContents.DefaultWebSite, TableOfContents.DefaultPort, "ws/2/discid/" + Uri.EscapeDataString(toc.DiscId), null);
+
+                var query = new StringBuilder();
+
+                query.Append("toc=");
+
+                query.Append(toc.FirstTrack).Append("+").Append(toc.LastTrack).Append("+").Append(toc.Length);
+                for (var i = toc.FirstTrack; i <= toc.LastTrack; ++i)
+                {
+                    query.Append("+").Append(toc.Tracks[i].Offset);
+                }
+
+                //JSON形式で取得
+                query.Append("&fmt=json");
+
+                uri.Query = query.ToString();
+                var cdDataUri= uri.Uri;
+
             }
         }
     }
