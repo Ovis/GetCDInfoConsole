@@ -2,6 +2,8 @@
 using MetaBrainz.MusicBrainz.DiscId;
 using Newtonsoft.Json;
 using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -116,6 +118,17 @@ namespace GetCDInfoConsole
                 Console.WriteLine("MBID        : " + mbId);
 
                 Console.WriteLine("続行するには何かキーを押してください．．．");
+                // Console.ReadKey();
+
+                //アルバムアート取得のテスト
+                var covArt = new MetaBrainz.MusicBrainz.CoverArt.CoverArt("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36 OPR/55.0.2994.61");
+
+                Image imgData = covArt.FetchFrontAsync(new Guid(mbId)).Result.Decode();
+                using (Bitmap saveImg = new Bitmap(imgData.Width, imgData.Height))
+                {
+                    imgData.Save("D:\\AlbumArt.jpg", ImageFormat.Jpeg);
+                }
+
                 Console.ReadKey();
 
             }
